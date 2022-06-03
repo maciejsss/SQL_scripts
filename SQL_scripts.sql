@@ -104,18 +104,18 @@ ORDER BY c.custid
 
 
 SELECT 
-c.custid
-,c.companyname
-,o.orderid
-,o.orderdate
+	c.custid
+	,c.companyname
+	,o.orderid
+	,o.orderdate
 FROM Sales.Customers c
      LEFT JOIN Sales.Orders o ON c.custid = o.custid
 
 ---------
 
 SELECT 
-c.custid
-,c.companyname
+	c.custid
+	,c.companyname
 FROM Sales.Customers c
      LEFT JOIN Sales.Orders o ON c.custid = o.custid
 WHERE o.orderid IS NULL
@@ -123,10 +123,10 @@ WHERE o.orderid IS NULL
 -----------
 
 SELECT 
-c.custid
-,c.companyname
-,o.orderid
-,o.orderdate
+	c.custid
+	,c.companyname
+	,o.orderid
+	,o.orderdate
 FROM Sales.Customers c
      LEFT JOIN Sales.Orders o ON c.custid = o.custid
 WHERE o.orderdate = '20160212'
@@ -135,24 +135,107 @@ WHERE o.orderdate = '20160212'
 --------------
 
 SELECT 
-c.custid
-,c.companyname
-,o.orderid
-,o.orderdate
+	c.custid
+	,c.companyname
+	,o.orderid
+	,o.orderdate
 FROM Sales.Customers c
      LEFT JOIN Sales.Orders o ON c.custid = o.custid and o.orderdate = '20160212'
 
 ---------
 
 
+select
+	orderid
+	,orderdate
+	,custid
+	,empid
+from Sales.Orders
+where orderdate = 
+(
+select MAX(orderdate) from Sales.Orders
+)
 
 
+--------------
+
+SELECT 
+	empid
+	,firstname
+	,lastname
+FROM HR.Employees
+WHERE empid NOT IN
+(
+    SELECT empid
+    FROM Sales.Orders
+    WHERE orderdate >= '2016-05-01'
+);
+
+------------
+
+SELECT DISTINCT 
+       country
+FROM Sales.Customers
+WHERE country NOT IN
+(
+    SELECT e.country
+    FROM HR.Employees e
+);
 
 
+----------
+
+select
+custid
+,orderid
+,orderdate
+,empid
+from Sales.Orders o
+where orderdate = (
+select MAX(o2.orderdate) from Sales.Orders o2
+where o.custid=o2.custid
+)
 
 
+----------
+
+SELECT 
+c.custid
+,c.companyname
+FROM Sales.Customers c
+WHERE c.custid IN
+(
+    SELECT o.custid
+    FROM sales.Orders o
+    WHERE c.custid = o.custid
+          AND YEAR(orderdate) = 2015
+)
+      AND c.custid NOT IN
+(
+    SELECT o.custid
+    FROM sales.Orders o
+    WHERE c.custid = o.custid
+          AND YEAR(orderdate) = 2016
+);
 
 
+----------------
 
+SELECT c.custid 
+       ,c.companyname
+FROM Sales.Customers c
+WHERE c.custid IN
+(
+    SELECT o.custid
+    FROM Sales.Orders o
+         JOIN Sales.OrderDetails od ON o.orderid = od.orderid
+    WHERE od.productid = 12
+);
 
+--------
 
+select 
+custid
+,ordermonth
+,SUM(qty) over (partition by custid order by ordermonth) as runqty
+from Sales.CustOrders
