@@ -86,3 +86,73 @@ SELECT empid
 FROM dbo.Nums
      CROSS JOIN hr.Employees
 WHERE n <= 5;
+
+---------------
+
+SELECT c.custid 
+       ,COUNT(distinct o.orderid) AS numorders 
+       ,SUM(od.qty) AS totalqty
+FROM Sales.Customers c
+     JOIN Sales.Orders o ON c.custid = o.custid
+     JOIN Sales.OrderDetails od ON o.orderid = od.orderid
+WHERE c.country = 'USA'
+GROUP BY c.custid
+ORDER BY c.custid
+
+
+-----------
+
+
+SELECT 
+c.custid
+,c.companyname
+,o.orderid
+,o.orderdate
+FROM Sales.Customers c
+     LEFT JOIN Sales.Orders o ON c.custid = o.custid
+
+---------
+
+SELECT 
+c.custid
+,c.companyname
+FROM Sales.Customers c
+     LEFT JOIN Sales.Orders o ON c.custid = o.custid
+WHERE o.orderid IS NULL
+
+-----------
+
+SELECT 
+c.custid
+,c.companyname
+,o.orderid
+,o.orderdate
+FROM Sales.Customers c
+     LEFT JOIN Sales.Orders o ON c.custid = o.custid
+WHERE o.orderdate = '20160212'
+
+
+--------------
+
+SELECT 
+c.custid
+,c.companyname
+,o.orderid
+,o.orderdate
+FROM Sales.Customers c
+     LEFT JOIN Sales.Orders o ON c.custid = o.custid and o.orderdate = '20160212'
+
+---------
+
+
+
+
+
+
+
+
+
+
+
+
+
