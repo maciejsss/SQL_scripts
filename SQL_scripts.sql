@@ -316,3 +316,98 @@ FROM Sales.Customers c
      CROSS APPLY dbo.TopOrders(c.custid, 3) AS orders;
 
 
+SELECT DISTINCT 
+       o.empid, 
+(
+    SELECT MAX(o2.orderdate)
+    FROM sales.Orders o2
+    WHERE o2.empid = o.empid
+) AS maxorderdate
+FROM Sales.Orders o;
+
+
+
+SELECT o.empid, 
+       maxorders.maxorderdate
+FROM Sales.Orders o
+     JOIN
+(
+    SELECT o2.empid, 
+           MAX(o2.orderdate) AS maxorderdate
+    FROM Sales.Orders o2
+    GROUP BY o2.empid
+) AS maxorders ON maxorders.empid = o.empid
+                  AND maxorders.maxorderdate = o.orderdate;
+
+
+------------------
+
+WITH ordersRN
+     AS (SELECT o.orderid, 
+                o.orderdate, 
+                o.custid, 
+                o.empid, 
+                ROW_NUMBER() OVER(
+                ORDER BY o.orderdate, 
+                         o.orderid) AS rownum
+         FROM Sales.Orders o)
+     SELECT *
+     FROM ordersRN
+     WHERE rownum BETWEEN 11 AND 20;
+
+
+--------
+
+DROP VIEW IF EXISTS Sales.VEmpOrders;
+GO
+
+CREATE VIEW Sales.VEmpOrders
+AS
+     SELECT o.empid, 
+            YEAR(o.orderdate) AS year, 
+            SUM(od.qty) AS qty
+     FROM Sales.Orders o
+          JOIN Sales.OrderDetails od ON o.orderid = od.orderid
+     GROUP BY o.empid, 
+              YEAR(o.orderdate);
+GO
+
+
+
+SELECT empid, 
+       year, 
+       qty, 
+       SUM(qty) OVER(ORDER BY empid, year) AS runqty
+FROM Sales.VEmpOrders;
+
+
+
+IF OBJECT_ID('Production.TopProducts') IS NOT NULL
+    DROP FUNCTION Production.TopProducts;
+GO
+
+CREATE FUNCTION Production.TopProducts
+(@suppid AS INT, 
+ @n AS      INT)
+RETURNS TABLE
+AS
+     RETURN
+     SELECT TOP (@n) productid, 
+                     productname, 
+                     unitprice
+     FROM Production.Products
+     WHERE supplierid = @suppid
+	 order by unitprice desc
+GO	 
+
+select * from Production.TopProducts(5,2)
+
+
+SELECT s.supplierid, 
+       s.companyname, 
+       topprod.productid, 
+       topprod.productname, 
+       topprod.unitprice
+FROM Production.Suppliers s
+     CROSS APPLY Production.TopProducts(s.supplierid, 2) AS topprod;
+
