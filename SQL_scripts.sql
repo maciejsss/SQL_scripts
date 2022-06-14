@@ -239,3 +239,80 @@ custid
 ,ordermonth
 ,SUM(qty) over (partition by custid order by ordermonth) as runqty
 from Sales.CustOrders
+
+
+
+
+SELECT act.ordeyear, 
+       act.orders, 
+       prev.orders AS prevyearorders, 
+       prev.orders - act.orders AS groth
+FROM
+(
+    SELECT YEAR(orderdate) AS ordeyear, 
+           COUNT(DISTINCT orderid) AS orders
+    FROM sales.orders
+    GROUP BY YEAR(orderdate)
+) AS act
+LEFT JOIN
+(
+    SELECT YEAR(orderdate) AS ordeyear, 
+           COUNT(DISTINCT orderid) AS orders
+    FROM sales.orders
+    GROUP BY YEAR(orderdate)
+) AS prev ON act.ordeyear = prev.ordeyear + 1;
+
+
+
+
+
+SELECT c.companyname, 
+       c.contactname, 
+       orders.orderid, 
+       orders.orderdate
+FROM Sales.Customers c
+     CROSS APPLY
+(
+    SELECT TOP 3 o.orderid, 
+                 o.orderdate
+    FROM Sales.Orders o
+    WHERE o.custid = c.custid
+    ORDER BY o.orderdate DESC
+) AS orders;
+
+
+-------------
+
+
+DROP FUNCTION IF EXISTS dbo.TopOrders
+GO
+
+CREATE FUNCTION dbo.TopOrders
+(@custid AS INT, 
+ @n AS      INT
+)
+RETURNS TABLE
+AS
+     RETURN
+     SELECT TOP (@n) o.orderid, 
+                     o.empid, 
+                     o.orderdate, 
+                     o.requireddate
+     FROM Sales.Orders o
+     WHERE o.custid = @custid
+     ORDER BY o.orderdate DESC;
+GO
+
+select * from dbo.TopOrders(1,3)
+----------------
+
+SELECT c.companyname, 
+       c.contactname, 
+       orders.empid, 
+       orders.orderdate, 
+       orders.orderid, 
+       orders.requireddate
+FROM Sales.Customers c
+     CROSS APPLY dbo.TopOrders(c.custid, 3) AS orders;
+
+
