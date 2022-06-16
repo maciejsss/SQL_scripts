@@ -411,3 +411,85 @@ SELECT s.supplierid,
 FROM Production.Suppliers s
      CROSS APPLY Production.TopProducts(s.supplierid, 2) AS topprod;
 
+
+-------------------
+select 1 as n
+union
+select 2
+union
+select 3
+union
+select 4
+union
+select 5
+union
+select 6
+union
+select 7
+union
+select 8
+union
+select 9
+union
+select 10
+
+-------------
+
+SELECT custid, 
+       empid
+FROM sales.Orders
+WHERE orderdate BETWEEN '2016-01-01' AND '2016-01-31'
+EXCEPT
+SELECT custid, 
+       empid
+FROM sales.Orders
+WHERE orderdate BETWEEN '2016-02-01' AND '2016-02-28'
+ORDER BY 1, 
+         2;
+
+
+----------
+
+SELECT custid, 
+       empid
+FROM sales.Orders
+WHERE orderdate BETWEEN '2016-01-01' AND '2016-01-31'
+INTERSECT
+SELECT custid, 
+       empid
+FROM sales.Orders
+WHERE orderdate BETWEEN '2016-02-01' AND '2016-02-28'
+ORDER BY 1, 
+         2;
+
+
+
+------------------
+
+
+SELECT custid, 
+       empid
+FROM sales.Orders
+WHERE orderdate BETWEEN '2016-01-01' AND '2016-01-31'
+INTERSECT
+SELECT custid, 
+       empid
+FROM sales.Orders
+WHERE orderdate BETWEEN '2016-02-01' AND '2016-02-28'
+EXCEPT
+SELECT custid, 
+       empid
+FROM sales.Orders
+WHERE YEAR(orderdate) = 2015; 
+
+
+
+
+
+
+
+
+
+
+
+
