@@ -483,6 +483,10 @@ FROM sales.Orders
 WHERE YEAR(orderdate) = 2015; 
 
 
+------------
+
+
+
 
 
 
