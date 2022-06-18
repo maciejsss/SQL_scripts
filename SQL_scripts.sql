@@ -486,11 +486,45 @@ WHERE YEAR(orderdate) = 2015;
 ------------
 
 
+SELECT empid
+	,ordermonth
+	,val
+	,SUM(val) OVER (PARTITION BY empid ORDER BY ordermonth ROWS BETWEEN unbounded preceding	AND CURRENT ROW) AS runval
+FROM Sales.EmpOrders
 
+------------
 
+SELECT orderid
+	,custid
+	,val
+	,ROW_NUMBER() OVER (		ORDER BY val		) AS rownum
+	,RANK() OVER (		ORDER BY val		) AS rank
+	,DENSE_RANK() OVER (		ORDER BY val		) AS denseRank
+	,NTILE(10) OVER (		ORDER BY val		) AS ntile
+FROM Sales.OrderValues
 
+-----------------
 
+SELECT orderid
+	,custid
+	,val
+	,ROW_NUMBER() OVER (
+		PARTITION BY custid ORDER BY val
+		) as rownum
+FROM sales.OrderValues
 
+-----------------------
+
+SELECT custid
+	,orderid
+	,val
+	,LAG(val) OVER (
+		PARTITION BY custid ORDER BY orderid
+		) AS prevval
+	,LEAD(val) OVER (
+		PARTITION BY custid ORDER BY orderid
+		) AS nextval
+FROM sales.OrderValues
 
 
 
