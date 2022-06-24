@@ -622,6 +622,29 @@ GROUP BY empid
 
 
 
+SELECT empid, A,B,C,D
+FROM (
+	SELECT empid
+		,custid
+		,qty
+	FROM dbo.Orders
+	) AS D
+PIVOT(sum(qty) FOR custid IN (A,B,C,D)) AS P
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
