@@ -620,7 +620,15 @@ SELECT empid
 FROM dbo.Orders
 GROUP BY empid
 
+----------------------
 
+
+SELECT empid
+		,custid
+		,qty
+	FROM dbo.Orders
+
+---------------
 
 SELECT empid, A,B,C,D
 FROM (
@@ -628,8 +636,23 @@ FROM (
 		,custid
 		,qty
 	FROM dbo.Orders
-	) AS D
-PIVOT(sum(qty) FOR custid IN (A,B,C,D)) AS P
+	) AS sub
+PIVOT(sum(qty) FOR custid IN (A,B,C,D)) AS piv
+
+-----------------
+
+SELECT custid, [1],[2],[3]
+FROM (
+	SELECT empid
+		,custid
+		,qty
+	FROM dbo.Orders
+	) AS sub
+PIVOT(sum(qty) FOR empid IN ([1],[2],[3])) AS piv
+
+--------------
+
+
 
 
 
