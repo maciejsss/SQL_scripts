@@ -622,13 +622,13 @@ GROUP BY empid
 
 ----------------------
 
+--- PIVOT
 
 SELECT empid
 		,custid
 		,qty
 	FROM dbo.Orders
 
----------------
 
 SELECT empid, A,B,C,D
 FROM (
@@ -639,7 +639,6 @@ FROM (
 	) AS sub
 PIVOT(sum(qty) FOR custid IN (A,B,C,D)) AS piv
 
------------------
 
 SELECT custid, [1],[2],[3]
 FROM (
@@ -649,8 +648,37 @@ FROM (
 	FROM dbo.Orders
 	) AS sub
 PIVOT(sum(qty) FOR empid IN ([1],[2],[3])) AS piv
-
 --------------
+
+
+-- UNPIVOT
+select 
+*
+from dbo.EmpCustOrders
+
+
+select 
+*
+from dbo.EmpCustOrders
+CROSS JOIN (VALUES('A'),('B'),('C'),('D')) as C(custid)
+
+
+select 
+empid,custid,qty
+from dbo.EmpCustOrders
+CROSS APPLY (VALUES('A', A),('B', B),('C', C),('D', D)) as C(custid,qty)
+where qty is not null
+
+
+select 
+*
+from dbo.EmpCustOrders
+
+SELECT empid
+	,custid
+	,qty
+FROM dbo.EmpCustOrders
+UNPIVOT(qty for custid in (A,B,C,D)) as U
 
 
 
