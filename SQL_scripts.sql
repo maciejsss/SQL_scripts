@@ -682,10 +682,83 @@ UNPIVOT(qty for custid in (A,B,C,D)) as U
 
 
 
+-------------- OUTPUT
+
+DROP TABLE IF EXISTS dbo.T1
+	
+CREATE TABLE dbo.T1 (
+	keycol INT NOT NULL identity(1, 1) CONSTRAINT PK_T1 PRIMARY KEY
+	,datacol NVARCHAR(40) NOT NULL
+	)
+
+INSERT INTO dbo.T1 (datacol)
+OUTPUT inserted.keycol
+	,inserted.datacol
+SELECT lastname
+FROM HR.Employees
+WHERE country = N'USA'
 
 
 
+---------
 
+DECLARE @newcols TABLE (
+	keycol INT
+	,datacol NVARCHAR(40)
+	)
+
+INSERT INTO dbo.T1 (datacol)
+OUTPUT inserted.keycol
+	,inserted.datacol
+INTO @newcols
+SELECT lastname
+FROM HR.Employees
+WHERE country = N'USA'
+
+SELECT *
+FROM @newcols
+
+----------- DELETE OUTPUT
+
+DROP TABLE IF EXISTS dbo.Orders
+	
+	SELECT *
+	INTO dbo.Orders
+	FROM sales.Orders
+
+
+
+DELETE
+FROM dbo.Orders
+OUTPUT deleted.orderdate
+	,deleted.orderdate
+	,deleted.empid
+	,deleted.custid
+WHERE orderdate < '20160101'
+
+
+----------- UPDATE OUTPUT
+
+DROP TABLE IF EXISTS dbo.orderdetails
+	SELECT *
+	INTO dbo.OrderDetails
+	FROM Sales.OrderDetails
+
+
+BEGIN TRAN 
+UPDATE dbo.OrderDetails
+SET discount += 0.25
+OUTPUT inserted.productid AS produc
+
+	,deleted.discount AS oldPrice
+	,inserted.discount AS newPrice
+
+select @@TRANCOUNT
+
+COMMIT
+
+
+--------------
 
 
 
