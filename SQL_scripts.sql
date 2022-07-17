@@ -760,6 +760,47 @@ COMMIT
 
 --------------
 
+DELETE
+FROM dbo.Orders
+OUTPUT deleted.orderid
+	,deleted.orderdate
+WHERE orderdate < '2014-08-01'
+
+
+----------
+
+
+DELETE
+FROM dbo.Orders
+OUTPUT deleted.orderid
+	,deleted.shipcountry
+WHERE shipcountry = 'Brazil'
+
+
+----------
+
+
+SELECT * FROM dbo.Orders
+
+UPDATE dbo.Orders
+SET shipregion = '<None>'
+OUTPUT inserted.custid
+	,deleted.shipregion AS oldRegion
+	,inserted.shipregion AS newRegion
+WHERE shipregion IS NULL
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
