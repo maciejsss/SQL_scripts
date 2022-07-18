@@ -854,9 +854,20 @@ WHEN NOT MATCHED BY SOURCE THEN DELETE; -- usuwa wiersze z tabeli docelowej je¿e
 select * from dbo.Customers
 
 
+----------------CTE DML
+
+with c as 
+(
+select top(50) *
+from dbo.Orders
+where shipaddress = 'Torikatu 2345'
+)
+
+delete from c
 
 
-
+select * from dbo.Orders
+where shipaddress = 'Torikatu 2345'
 
 
 
