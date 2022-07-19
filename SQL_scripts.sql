@@ -870,6 +870,37 @@ select * from dbo.Orders
 where shipaddress = 'Torikatu 2345'
 
 
+----------- TEMP TABLE
+
+
+CREATE TABLE dbo.Employees (
+	empid INT CONSTRAINT PK_Employees PRIMARY KEY NONCLUSTERED
+	,empname VARCHAR(25) NOT NULL
+	,department VARCHAR(50) NOT NULL
+	,salary NUMERIC(10, 2) NOT NULL
+	,sysstart DATETIME2(0) GENERATED ALWAYS AS ROW START HIDDEN NOT NULL
+	,sysend DATETIME2(0) GENERATED ALWAYS AS ROW END HIDDEN NOT NULL
+	,PERIOD FOR SYSTEM_TIME(sysstart, sysend)
+	,INDEX ix_Employees CLUSTERED (
+		empid
+		,sysstart
+		,sysend
+		)
+	)
+	WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.EmployeesHistory)); --je¿eli nie ma tabeli historii, zostanie utworzona
+
+
+	
+
+
+
+
+
+
+
+
+
+
 
 
 
