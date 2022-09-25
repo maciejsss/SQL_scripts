@@ -850,7 +850,7 @@ WHEN NOT MATCHED
 			,SRC.phone
 			,SRC.address
 			)
-WHEN NOT MATCHED BY SOURCE THEN DELETE; -- usuwa wiersze z tabeli docelowej je¿eli nie ma ich w Ÿród³owej
+WHEN NOT MATCHED BY SOURCE THEN DELETE; -- usuwa wiersze z tabeli docelowej jeï¿½eli nie ma ich w ï¿½rï¿½dï¿½owej
 
 
 select * from dbo.Customers
@@ -889,7 +889,7 @@ CREATE TABLE dbo.Employees (
 		,sysend
 		)
 	)
-	WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.EmployeesHistory)); --je¿eli nie ma tabeli historii, zostanie utworzona
+	WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.EmployeesHistory)); --jeï¿½eli nie ma tabeli historii, zostanie utworzona
 
 
 
@@ -928,7 +928,7 @@ SET @i = 10
 SELECT @i
 GO
 
-SELECT @i -- b³¹d bo poza wsadem
+SELECT @i -- blad bo poza wsadem
 
 
 
