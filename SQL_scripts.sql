@@ -828,6 +828,8 @@ values
 (6,'cust 6 (new)','(666) 666-6666','address 6'),
 (7,'cust 7 (new)','(777) 777-7777','address 7')
 
+select * from dbo.Customers
+select * from dbo.CustomersStage
 
 
 MERGE INTO dbo.Customers AS TGT
@@ -888,6 +890,49 @@ CREATE TABLE dbo.Employees (
 		)
 	)
 	WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.EmployeesHistory)); --je¿eli nie ma tabeli historii, zostanie utworzona
+
+
+
+	-- VARIABLES
+
+DECLARE @empName NVARCHAR(255)
+
+SET @empName = (
+		SELECT CONCAT (
+				firstname
+				,' '
+				,lastname
+				)
+		FROM HR.Employees
+		WHERE empid = 3
+		)
+
+SELECT @empName AS empName
+
+
+DECLARE @empFirstName NVARCHAR(255)
+		,@empLastName NVARCHAR(255)
+
+SELECT @empFirstName = firstname
+	,@empLastName = lastname
+FROM HR.Employees
+WHERE empid = 3
+
+SELECT @empFirstName as FirstName
+	,@empLastName as LastName
+
+	
+
+DECLARE @i INT
+SET @i = 10
+SELECT @i
+GO
+
+SELECT @i -- b³¹d bo poza wsadem
+
+
+
+
 
 
 	
