@@ -931,6 +931,71 @@ GO
 SELECT @i -- blad bo poza wsadem
 
 
+-- IF
+
+IF YEAR(GETDATE()) <> YEAR(DATEADD(d,1,GETDATE()))
+	BEGIN
+		PRINT('Dzis jest ostatni dzień roku.')
+	END
+ELSE
+	BEGIN
+		PRINT('To nie jest ostatni dzień roku.')
+	END
+
+
+-- WHILE
+
+DECLARE @i int = 0
+
+WHILE @i <=10
+BEGIN
+	PRINT @i
+	SET @i = @i + 1
+END
+
+
+DECLARE @i int = 0
+
+WHILE @i <=10
+BEGIN
+	PRINT @i
+	IF @i = 6 BREAK --zatrzymanie
+	SET @i = @i + 1
+END
+
+
+
+DECLARE @i int = 0
+
+WHILE @i <=10
+BEGIN
+	SET @i = @i + 1
+	IF @i = 6 CONTINUE --pomija następne działania iteracji
+	PRINT @i
+END
+
+
+
+--------
+
+SET NOCOUNT ON
+DROP TABLE IF EXISTS dbo.Numbers
+
+CREATE TABLE dbo.Numbers(
+n int not null primary key
+)
+
+DECLARE @i int = 0
+
+WHILE @i <= 100
+	BEGIN
+		insert into dbo.Numbers(n) VALUES (@i)
+		SET @i = @i + 1
+	END
+	
+select * from dbo.Numbers
+
+
 
 
 
