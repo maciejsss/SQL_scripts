@@ -996,12 +996,60 @@ WHILE @i <= 100
 select * from dbo.Numbers
 
 
+-- 
+SELECT data.Year
+	,data.lastYearSum
+	,data.sumqty
+	,isnull(data.sumqty, 0) - isnull(data.lastYearSum, 0) as growth
+FROM (
+	SELECT YEAR(ordermonth) AS Year
+		,sum(qty) AS sumqty
+		,lag(sum(qty)) OVER (
+			ORDER BY YEAR(ordermonth)
+			) AS lastYearSum
+	FROM sales.CustOrders
+	GROUP BY YEAR(ordermonth)
+	) AS data
 
 
 
 
-	
+-- temp table
 
+DROP TABLE IF EXISTS tempdb.dbo.#MyOrderTotalsByYear
+GO
+
+CREATE TABLE #MyOrderTotalsByYear
+(
+orderYear int not null primary key,
+qty int not null
+)
+
+insert into #MyOrderTotalsByYear
+select year(o.orderdate) as Year
+,sum(od.qty) as sumQty
+from Sales.orders o 
+join sales.OrderDetails od on o.orderid=od.orderid
+group by year(o.orderdate)
+
+select * from #MyOrderTotalsByYear
+
+
+
+-- global temp table
+
+CREATE TABLE dbo.##Globals
+(
+id sysname not null primary key,
+val SQL_VARIANT not null
+)
+
+insert into dbo.##Globals
+VALUES('i', cast(10 as int))
+
+select * from dbo.dbo.##Globals
+
+s
 
 
 
