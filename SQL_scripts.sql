@@ -1049,7 +1049,70 @@ VALUES('i', cast(10 as int))
 
 select * from dbo.dbo.##Globals
 
-s
+
+-- table variables
+
+DECLARE @MyOrderTotalByYear TABLE (
+	orderyear INT NOT NULL PRIMARY KEY
+	,qty INT NOT NULL
+	)
+
+INSERT INTO @MyOrderTotalByYear (
+	orderyear
+	,qty
+	)
+SELECT YEAR(o.orderdate) AS orderyea
+	,sum(qty) AS qt
+FROM Sales.Orders o
+JOIN Sales.OrderDetails od ON o.orderid = od.orderid
+GROUP BY YEAR(o.orderdate)
+
+--SELECT ot1.orderyear
+--	,ot1.qty as [cur qty]
+--	,ot2.qty as [prev qty]
+--FROM @MyOrderTotalByYear ot1
+--LEFT JOIN @MyOrderTotalByYear ot2 ON ot1.orderyear = ot2.orderyear + 1
+
+select
+ot.orderyear
+,ot.qty as [cur qty]
+,lag(qty) over (order by ot.orderyear) as [prev qty]
+from @MyOrderTotalByYear ot
+go
+-- table types
+
+DROP TYPE IF EXISTS dbo.OrderTotalByYear;
+
+	CREATE TYPE dbo.OrderTotalByYear AS TABLE (
+		orderyear INT NOT NULL PRIMARY KEY
+		,qty INT NOT NULL
+		)
+
+
+DECLARE @MyOrderTotalByYear AS dbo.OrderTotalByYear
+
+INSERT INTO @MyOrderTotalByYear (
+	orderyear
+	,qty
+	)
+SELECT YEAR(o.orderdate) AS orderyea
+	,sum(qty) AS qt
+FROM Sales.Orders o
+JOIN Sales.OrderDetails od ON o.orderid = od.orderid
+GROUP BY YEAR(o.orderdate)
+
+SELECT *
+FROM @MyOrderTotalByYear
+
+
+
+
+
+
+
+
+
+
 
 
 
