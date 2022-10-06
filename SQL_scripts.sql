@@ -1087,7 +1087,7 @@ DROP TYPE IF EXISTS dbo.OrderTotalByYear;
 		orderyear INT NOT NULL PRIMARY KEY
 		,qty INT NOT NULL
 		)
-
+GO
 
 DECLARE @MyOrderTotalByYear AS dbo.OrderTotalByYear
 
@@ -1103,6 +1103,92 @@ GROUP BY YEAR(o.orderdate)
 
 SELECT *
 FROM @MyOrderTotalByYear
+
+GO
+
+-- dynamic sql
+
+DECLARE @sql VARCHAR(max);
+SET @sql = 'Print ''komunikat'';';
+EXEC (@sql)
+GO
+
+
+DECLARE @sql as nvarchar(100);
+
+set @sql = 'SELECT orderid
+	,custid
+	,empid
+	,orderdate
+FROM Sales.Orders
+WHERE orderid = @orderid'
+
+EXEC sp_executesql
+@stmt = @sql,
+@params = N'@orderid as INT', -- musi być N'...!!!
+@orderid = 10248
+GO
+
+SELECT *
+FROM (
+	SELECT shipperid
+		,YEAR(orderdate) AS orderyear
+		,freight
+	FROM Sales.Orders
+	) AS D
+PIVOT(sum(freight) FOR orderyear IN (
+			[2014]
+			,[2015]
+			,[2016]
+			)) AS P
+
+
+
+use AdventureWorks2019
+go
+
+WITH cte
+AS (
+	SELECT YEAR(OrderDate) AS [Year]
+		,MONTH(OrderDate) AS [Month]
+		,SUM(TotalDue) AS [Total]
+	FROM sales.SalesOrderHeader
+	GROUP BY YEAR(OrderDate)
+		,MONTH(OrderDate)
+	)
+
+
+select *
+,SUM(Total) over (order by year) as [TotalByYear]
+,convert(varchar(10),
+	convert(decimal(15,2),
+		Total/SUM(Total) over (order by year)
+		)*100)	
+			+ ' %' as [PercentOfTotalYear]
+from cte
+order by 1,2
+GO
+
+
+--udf
+
+ALTER FUNCTION dbo.GetAge (
+	@birthdate DATE
+	,@actualdate DATE
+	)
+RETURNS INT
+AS
+BEGIN
+	RETURN datediff(YEAR, @birthdate, @actualdate)
+END
+GO
+
+select dbo.GetAge('1990-08-24',GETDATE()) as age
+
+
+
+
+
 
 
 
